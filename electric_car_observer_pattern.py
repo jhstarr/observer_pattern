@@ -6,7 +6,7 @@
 # its range if the battery is upgraded.  This was necessary
 # because I wanted to model the range as an attribute of the car instead
 # of a calculation within the get_range method of the battery as the book
-# implemented it. (I think range should be )
+# implemented it. (I think range should be an attribute of the car.)
 
 # The book didn't mention nor require observer pattern.  I thought it was
 # called for.
@@ -111,7 +111,7 @@ class Battery():
         """Initialize the battery's attributes."""
         self.battery_size = battery_size
         
-        # This is an attempt to let electric car instances subscribe to their
+        # This lets electric car instances subscribe to their
         # batteries and re-calculate range whenever their battery is upgraded.
         # set is an unordered collection with no duplicates.
         self.subscribers = set()
