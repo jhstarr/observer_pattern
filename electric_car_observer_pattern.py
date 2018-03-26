@@ -2,14 +2,14 @@
 # Exercise 9-9 of Python Crash Course
 # This exercise implements a simple observer pattern in which each 
 # ElectricCar instance subscribes to its battery ("observes it")
-# and re-calculates
-# its range if the battery is upgraded.  This was necessary
+# and re-calculates its (the car's) range if the battery is upgraded.  
+# This was necessary
 # because I wanted to model the range as an attribute of the car instead
 # of a calculation within the get_range method of the battery as the book
 # implemented it. (I think range should be an attribute of the car.)
 
 # The book didn't mention nor require observer pattern.  I thought it was
-# called for.
+# called for and researched the pattern.
 
 class Car():
     """A simple model of a car."""
@@ -62,19 +62,24 @@ class ElectricCar(Car):
         """
         super().__init__(make,model,year)
         
-        # Give the car a battery automatically when electric car
-        # instance created.
+        # Create a new instance of Battery() and store it in the attribute
+        # self.battery.
 
         self.battery = Battery()
 
-        # Register the electric car instance with battery 
-        # by calling this battery method so that new range 
+        # Here's where the observer pattern starts.  The purpose of using the
+        # observer pattern is so that the range will update if the 
+        # battery upgrades to a larger size.
+
+        # Register the electric car instance (self) with battery 
+        # by calling this battery.register method so that new range 
         # will calculate if battery upgrades.
 
         self.battery.register(self)
         
         # Go ahead and calculate the range.
         self.calculate_range()
+    
     
     def calculate_range(self):
         """A method to calculate range from battery and model."""
@@ -94,8 +99,12 @@ class ElectricCar(Car):
             elif self.battery.battery_size ==85:
                 self.range = 245*85/70
 
+    def battery_upgraded(self):
+        self.calculate_range()
+
     def fill_gas_tank(self):
-        """Electric cars do not have gas tanks."""
+        """Electric cars do not have gas tanks so this overrides the 
+        method."""
         print("This car does not have a gas tank!")
     
     def print_range(self):
@@ -122,15 +131,13 @@ class Battery():
     def unregister(self,who):
         self.subscribers.discard(who)
     
-    # This dispatch method calculates the driving range for all subscribers.
-    # (If a battery upgrades, other things might need to upgrade, too, like 
-    # weight of the car.)
-    # To do this more generally, I should probably send alerts back to the 
-    # subscribers and let them take the appropriate action.
+    # This dispatch method tells all the subscribers to run their 
+    # battery_upgraded method.  (If a battery upgrades, other things besides
+    # range might need to upgrade like weight of the car.)
 
     def dispatch(self):
         for subscriber in self.subscribers:
-            subscriber.calculate_range()
+            subscriber.battery_upgraded()
 
     def describe_battery(self):
         """Print a statement describing the battery size."""
@@ -151,6 +158,7 @@ class Battery():
 
 my_car = ElectricCar('Tesla','Model S',2020)
 my_car.fill_gas_tank()
+
 
 print('\n'+my_car.get_descriptive_name())
 
