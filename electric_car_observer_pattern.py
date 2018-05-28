@@ -58,15 +58,12 @@ class ElectricCar(Car):
     def __init__(self,make,model,year):
         """
         Initializes attributes of the parent class.  It takes the attributes
-        necesasry to create a car.
+        necesasry to create a car.  Then, super() is a special function that 
+        connects the child class with the parent class.
         """
 
         super().__init__(make,model,year)
-            """
-            Special function that connects the child class with the parent
-            class.
-            """
-
+            
         # Create a new instance of Battery() and store it in the attribute
         # self.battery.
 
