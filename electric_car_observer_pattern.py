@@ -9,7 +9,7 @@
 # implemented it. (I think range should be an attribute of the car.)
 
 # The book didn't mention nor require observer pattern.  I thought it was
-# called for and researched the pattern.
+# called for, researched and found the pattern.
 
 class Car():
     """A simple model of a car."""
@@ -57,19 +57,24 @@ class ElectricCar(Car):
     """Represents aspects of a car, specific to electric vehicles."""
     def __init__(self,make,model,year):
         """
-        Initializes attributes of the parent class.
-        Then initialize attributes specific to an electric car.
+        Initializes attributes of the parent class.  It takes the attributes
+        necesasry to create a car.
         """
+
         super().__init__(make,model,year)
-        
+            """
+            Special function that connects the child class with the parent
+            class.
+            """
+
         # Create a new instance of Battery() and store it in the attribute
         # self.battery.
 
         self.battery = Battery()
 
-        # Here's where the observer pattern starts.  The purpose of using the
-        # observer pattern is so that the range will update if the 
-        # battery upgrades to a larger size.
+        # Here's where the observer pattern begins.  The purpose of the
+        # observer pattern is so that the range  attribute of 
+        # electric car will update if the battery upgrades to a larger size.
 
         # Register the electric car instance (self) with battery 
         # by calling this battery.register method so that new range 
@@ -77,7 +82,8 @@ class ElectricCar(Car):
 
         self.battery.register(self)
         
-        # Go ahead and calculate the range.
+        # Go ahead and calculate the initial range...which will change if the
+        # battery upgrades.
         self.calculate_range()
     
     
@@ -99,6 +105,9 @@ class ElectricCar(Car):
             elif self.battery.battery_size ==85:
                 self.range = 245*85/70
 
+    # This is part of the observer pattern.  This battery_upgraded() method
+    # should run all the methods that should be run if a battery upgrades.
+    # The Battery() itself 
     def battery_upgraded(self):
         self.calculate_range()
 
@@ -122,10 +131,11 @@ class Battery():
         
         # This lets electric car instances subscribe to their
         # batteries and re-calculate range whenever their battery is upgraded.
-        # set is an unordered collection with no duplicates.
+        # A "set" is an unordered collection with no duplicates.
         self.subscribers = set()
 
-    # The electric car instance registers with its battery.
+    # The electric car instance registers with its battery and gets added
+    # to the set of subscribers, an attribute of the battery.
     def register(self,who):
         self.subscribers.add(who)
     def unregister(self,who):
@@ -133,9 +143,11 @@ class Battery():
     
     # This dispatch method tells all the subscribers to run their 
     # battery_upgraded method.  (If a battery upgrades, other things besides
-    # range might need to upgrade like weight of the car.)
+    # calculate_range() might need to run like weight of the car.)
+    # Battery does not need to know all those methods.  They are inside the 
+    # battery upgraded method of the electric car subscribers.
 
-    def dispatch(self):
+    def battery_upgraded_dispatch(self):
         for subscriber in self.subscribers:
             subscriber.battery_upgraded()
 
@@ -149,7 +161,7 @@ class Battery():
         if self.battery_size == 70:
             self.battery_size = 85
             # This command kicks off the recalculation by all subscribers
-            self.dispatch()
+            self.battery_upgraded_dispatch()
 
         elif self.battery_size == 85:
             print("You've already got the biggest, baddest battery we have.")
